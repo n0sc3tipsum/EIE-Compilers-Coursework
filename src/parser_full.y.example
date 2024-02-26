@@ -72,23 +72,24 @@ function_definition
 
 
 primary_expression
-	: IDENTIFIER
+	: IDENTIFIER //some name given to variable, function, etc
 	| INT_CONSTANT {
 		$$ = new IntConstant($1);
 	}
-    | FLOAT_CONSTANT
+  | FLOAT_CONSTANT
 	| STRING_LITERAL
 	| '(' expression ')'
 	;
 
+//things that come after some expression : array[i], hello++, hello--
 postfix_expression
 	: primary_expression
-	| postfix_expression '[' expression ']'
-	| postfix_expression '(' ')'
-	| postfix_expression '(' argument_expression_list ')'
-	| postfix_expression '.' IDENTIFIER
-	| postfix_expression PTR_OP IDENTIFIER
-	| postfix_expression INC_OP
+	| postfix_expression '[' expression ']' //Used for things like array/string slicing
+	| postfix_expression '(' ')'	//function call w/out args
+	| postfix_expression '(' argument_expression_list ')' //Function call
+	| postfix_expression '.' IDENTIFIER //Used for acessing struct elements
+	| postfix_expression PTR_OP IDENTIFIER // <postfixexpr> *var
+	| postfix_expression INC_OP // <postfixexpr>++
 	| postfix_expression DEC_OP
 	;
 
@@ -102,8 +103,8 @@ unary_expression
 	| INC_OP unary_expression
 	| DEC_OP unary_expression
 	| unary_operator cast_expression
-	| SIZEOF unary_expression
-	| SIZEOF '(' type_name ')'
+	| SIZEOF unary_expression		//sizeof(variable)
+	| SIZEOF '(' type_name ')' //sizeof(int)
 	;
 
 unary_operator
@@ -149,7 +150,7 @@ relational_expression
 
 equality_expression
 	: relational_expression
-	| equality_expression EQ_OP relational_expression
+	| equality_expression EQ_OP relational_expression 
 	| equality_expression NE_OP relational_expression
 	;
 
