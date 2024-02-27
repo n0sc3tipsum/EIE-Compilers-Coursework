@@ -72,7 +72,7 @@ function_definition
 
 
 primary_expression
-	: IDENTIFIER //some name given to variable, function, etc
+	: IDENTIFIER {$$ = new Identifier(*$1); delete $1;}//some name given to variable, function, etc
 	| INT_CONSTANT {
 		$$ = new IntConstant($1);
 	}
@@ -83,7 +83,7 @@ primary_expression
 
 //things that come after some expression : array[i], hello++, hello--
 postfix_expression
-	: primary_expression
+	: primary_expression {$$ = $1;}
 	| postfix_expression '[' expression ']' //Used for things like array/string slicing
 	| postfix_expression '(' ')'	//function call w/out args
 	| postfix_expression '(' argument_expression_list ')' //Function call
@@ -108,12 +108,12 @@ unary_expression
 	;
 
 unary_operator
-	: '&'
-	| '*'
-	| '+'
-	| '-'
-	| '~'
-	| '!'
+	: '&' {$$ = new UnaryOp($1);}
+	| '*' {$$ = new UnaryOp($1);}
+	| '+' {$$ = new UnaryOp($1);}
+	| '-' {$$ = new UnaryOp($1);}
+	| '~' {$$ = new UnaryOp($1);}
+	| '!' {$$ = new UnaryOp($1);}
 	;
 
 cast_expression
@@ -150,7 +150,7 @@ relational_expression
 
 equality_expression
 	: relational_expression
-	| equality_expression EQ_OP relational_expression 
+	| equality_expression EQ_OP relational_expression
 	| equality_expression NE_OP relational_expression
 	;
 
@@ -243,15 +243,27 @@ storage_class_specifier
 	;
 
 type_specifier
-	: VOID
-	| CHAR
-	| SHORT
+	: VOID{
+		$$ = new TypeSpecifier("void");
+	}
+	| CHAR{
+		$$ = new TypeSpecifier("char");
+	}
+	| SHORT{
+		$$ = new TypeSpecifier("short");
+	}
 	| INT {
 		$$ = new TypeSpecifier("int");
 	}
-	| LONG
-	| FLOAT
-	| DOUBLE
+	| LONG{
+		$$ = new TypeSpecifier("long");
+	}
+	| FLOAT{
+		$$ = new TypeSpecifier("float");
+	}
+	| DOUBLE{
+		$$ = new TypeSpecifier("double");
+	}
 	| SIGNED
 	| UNSIGNED
   | struct_specifier
@@ -317,18 +329,18 @@ direct_declarator
 		delete $1;
 	}
 	| '(' declarator ')'
-	| direct_declarator '[' constant_expression ']'
+	| direct_declarator '[' constant_expression ']' //Const sized array
 	| direct_declarator '[' ']'
-	| direct_declarator '(' parameter_list ')'
+	| direct_declarator '(' parameter_list ')' //function def
 	| direct_declarator '(' identifier_list ')'
-	| direct_declarator '(' ')' {
+	| direct_declarator '(' ')' { //function with no args
 		$$ = new DirectDeclarator($1);
 	}
 	;
 
 pointer
-	: '*'
-	| '*' pointer
+	: '*' 			  {$$ = new PointerOp();}
+	| '*' pointer {$$ = $1;}
 	;
 
 parameter_list
@@ -343,8 +355,8 @@ parameter_declaration
 	;
 
 identifier_list
-	: IDENTIFIER
-	| identifier_list ',' IDENTIFIER
+	: IDENTIFIER 										 { $$ = new NodeList(*$1); }
+	| identifier_list ',' IDENTIFIER { $1->PushBack($2); $$ = $1; }
 	;
 
 type_name
@@ -415,8 +427,8 @@ compound_statement
 	;
 
 declaration_list
-	: declaration
-	| declaration_list declaration
+	: declaration { $$ = new NodeList($1); }
+	| declaration_list declaration { $1->PushBack($2); $$ = $1; }
 	;
 
 statement_list
