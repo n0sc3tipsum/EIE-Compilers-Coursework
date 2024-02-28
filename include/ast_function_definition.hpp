@@ -10,6 +10,7 @@ private:
     Node *declarator_;
     Node *compound_statement_;
     NodeList *declaration_list_;
+    int arg_amount_;
 
 public:
     FunctionDefinition(Node *declaration_specifiers, Node *declarator, Node *compound_statement) : declaration_specifiers_(declaration_specifiers), declarator_(declarator), compound_statement_(compound_statement){};
