@@ -328,14 +328,12 @@ direct_declarator
 		$$ = new Identifier(*$1);
 		delete $1;
 	}
-	| '(' declarator ')'
+	| '(' declarator ')' {$$ = $2;}
 	| direct_declarator '[' constant_expression ']' //Const sized array
 	| direct_declarator '[' ']'
 	| direct_declarator '(' parameter_list ')' //function def
 	| direct_declarator '(' identifier_list ')'
-	| direct_declarator '(' ')' { //function with no args
-		$$ = new DirectDeclarator($1);
-	}
+	| direct_declarator '(' ')' { $$ = new DirectDeclarator($1);}
 	;
 
 pointer
@@ -418,11 +416,12 @@ compound_statement
 	}
 	| '{' declaration_list '}' {
 		// TODO: correct this
-		$$ = nullptr;
+		$$ = $2;
 	}
 	| '{' declaration_list statement_list '}'  {
 		// TODO: correct this
-		$$ = nullptr;
+		$$ = new NodeList($1);
+		$$->PushBack($2);
 	}
 	;
 
