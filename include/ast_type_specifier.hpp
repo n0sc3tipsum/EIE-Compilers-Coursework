@@ -10,6 +10,7 @@ private:
 
 public:
     TypeSpecifier(std::string type) : type_(type){};
+    std::string getType(){return type_;}
     ~TypeSpecifier(){};
     void EmitRISC(std::ostream &stream, Context &context) const override;
     void Print(std::ostream &stream) const override;
