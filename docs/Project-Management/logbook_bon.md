@@ -20,4 +20,5 @@
 **log :**
 - understood that we should use external tools like Godbolt for reference in what a real gcc compiler will perform without optimisation
 - definately build up the program from the basic level
-- learnt what is assembler direcives 
+- learnt what is assembler direcives and looked at examples of what instruction needs to include what sort of directive
+
