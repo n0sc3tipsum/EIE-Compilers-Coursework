@@ -19,3 +19,10 @@
 - Started working on implementing the basic features of the parser
 
 
+#### 28.02
+
+**Log :**
+- Discussed initial task allocation to start implementing the parser and different node types
+- Still unsure of the exact structure of the context but that can be implemented once we know the kinds of nodes we have
+
+

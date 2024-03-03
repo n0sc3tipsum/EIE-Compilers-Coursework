@@ -209,12 +209,14 @@ expression
 	;
 
 constant_expression
-	: conditional_expression
+	: conditional_expression {$$ = $1;}
 	;
 
 declaration
 	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator_list ';'
+	| declaration_specifiers init_declarator_list ';'{
+		$$ = new Declaration($1, $2);
+	}
 	;
 
 declaration_specifiers
@@ -223,6 +225,7 @@ declaration_specifiers
 	| type_specifier { $$ = $1; }
 	| type_specifier declaration_specifiers
 	;
+
 
 init_declarator_list
 	: init_declarator
@@ -323,13 +326,14 @@ declarator
 	| direct_declarator { $$ = $1; }
 	;
 
+
 direct_declarator
 	: IDENTIFIER {
 		$$ = new Identifier(*$1);
 		delete $1;
 	}
 	| '(' declarator ')' {$$ = $2;}
-	| direct_declarator '[' constant_expression ']' //Const sized array
+	| direct_declarator '[' constant_expression ']' //Slicing
 	| direct_declarator '[' ']'
 	| direct_declarator '(' parameter_list ')' //function def
 	| direct_declarator '(' identifier_list ')'
@@ -342,8 +346,8 @@ pointer
 	;
 
 parameter_list
-	: parameter_declaration
-	| parameter_list ',' parameter_declaration
+	: parameter_declaration { $$ = new ParameterList($1); }
+	| parameter_list ',' parameter_declaration { $1->PushBack($2); $$ = $1; }
 	;
 
 parameter_declaration
@@ -353,7 +357,7 @@ parameter_declaration
 	;
 
 identifier_list
-	: IDENTIFIER 										 { $$ = new NodeList(*$1); }
+	: IDENTIFIER 										 { $$ = new NodeList($1); }
 	| identifier_list ',' IDENTIFIER { $1->PushBack($2); $$ = $1; }
 	;
 

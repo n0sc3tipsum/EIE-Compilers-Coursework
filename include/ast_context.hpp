@@ -20,6 +20,7 @@ typedef struct
 {
     std::string type;
     address_descriptor_t stored_address;
+    
 
 } symbol_record_t;
 
